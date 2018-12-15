@@ -1,0 +1,261 @@
+DML 
+
+
+1.SQL> insert into player values(
+  2  &playerid,
+  3  '&name',
+  4  &height,
+  5  &weight,
+  6  '&dob',
+  7  &coacherid
+  8  );
+
+2.SQL> select * from coach;
+        ID OFFICE         SALARY SPORT          TEAMID
+---------- ---------- ---------- ---------- ----------
+       111 room01          10000 football          211
+       112 room02          12000 cricket           212
+       113 room03          11000 tennis            213
+       114 room04          15000 hockey            214
+       115 room05          14000 athelete          215
+
+3.SQL> update player
+  2  set teamid=211 where playerid=311;
+1 row updated.
+
+4.SQL>delete table player
+   2  where playerid=311;
+
+
+SIMPLE QUERIES
+
+1.SQL> select max(salary) from coach;
+MAX(SALARY)
+-----------
+      15000
+
+2.SQL> select upper(name) from stadium
+  2  where capacity=20000;
+
+UPPER(NAME
+----------
+MANCHESTER
+SUPERNOVA
+
+3.SQL> select avg(salary) from coach;
+AVG(SALARY)
+-----------
+      12400
+4.SQL> select min(salary) from coach;
+MIN(SALARY)
+-----------
+      10000
+
+5.SQL> select length(name) from stadium;
+
+LENGTH(NAME)
+------------
+          10
+           9
+           8
+           9
+           8
+
+6.SQL> select salary+2000 from coach
+  2  where id=111;
+
+SALARY+2000
+-----------
+      12000
+
+
+
+
+
+SUB QUERIES
+
+1.Retrive the player details who are coached under coacher id=112.
+SQL> select * from player
+  2  where coacherid in(
+  3  select id from coach
+  4  where id=112);
+
+  PLAYERID NAME           HEIGHT     WEIGHT DOB        COACHERID     TEAMID
+---------- ---------- ---------- ---------- --------- ---------- ----------
+       312 sachin            160         65 21-MAR-76        112        212
+
+2.Retrive the coacher details who have team name='india'.
+
+SQL> select * from coach
+  2  where teamid in(
+  3  select teamid from team
+  4  where name='india');
+
+        ID OFFICE         SALARY SPORT          TEAMID
+---------- ---------- ---------- ---------- ----------
+       112 room02          12000 cricket           212
+
+3.Retrive the gamedetails who have regid=412.
+
+SQL> select * from gamedetails
+  2  where gametype in(
+  3  select gametype from register
+  4  where regid=412);
+
+GAMETYPE   DETAILS    DAY             TIME STDNAME
+---------- ---------- --------- ---------- ----------
+cricket    mem-12     20-MAY-13        930 sardarji
+
+4.Retrive the player details who are playing for cricket game.
+
+SQL> select * from player
+  2  where playerid in(
+  3  select playerid from sname
+  4  where playerid=312 and sportsname='cricket');
+
+  PLAYERID NAME           HEIGHT     WEIGHT DOB        COACHERID     TEAMID
+---------- ---------- ---------- ---------- --------- ---------- ----------
+       312 sachin            160         65 21-MAR-76        112        212
+
+
+
+
+5.Retrive the player details and  game details who have register id=414.
+
+
+SQL> select * from player
+  2  where playerid in
+  3  (
+  4  select playerid from register
+  5  where gametype in(
+  6  select gametype from register
+  7  where regid=414));
+
+  PLAYERID NAME           HEIGHT     WEIGHT DOB        COACHERID     TEAMID
+---------- ---------- ---------- ---------- --------- ---------- ----------
+       314 singh             170         60 17-DEC-85        114        214
+
+
+
+
+
+
+
+
+
+
+
+JOIN CONDITIONS
+
+1.Retrive the playerid,name,height,weight,sportsname of player using join conditions.
+
+SQL> select a.playerid,name,height,weight,sportsname from player a,sname b
+  2  where a.playerid=b.pl_id;
+
+  PLAYERID NAME           HEIGHT     WEIGHT SPORTSNAME
+---------- ---------- ---------- ---------- ----------
+       311 ronaldo           180         60 football
+       312 sachin            160         65 cricket
+       313 sania             165         55 tennis
+       314 singh             170         60 hockey
+       315 raja              172         62 athelete
+
+2.Retrive the coacher id,office,team id , team name using left outer join conditions.
+ 
+SQL> select c.id,office,sport,c.teamid,name from coach c,team t
+  2  where c.teamid=t.teamid(+);
+
+        ID OFFICE     SPORT          TEAMID NAME
+---------- ---------- ---------- ---------- ----------
+       111 room01     football          211 unitedarab
+       112 room02     cricket           212 india
+       113 room03     tennis            213 feder
+       114 room04     hockey            214 pakistan
+       115 room05     athelete          215 russia
+
+3.Retrive the player id,name,gametype,register id using right outer join conditions.
+
+SQL> select p.playerid,name,g.gametype,regid from player p,gamedetails g,register r
+  2  where p.playerid(+)=r.playerid and g.gametype(+)=r.gametype;
+
+  PLAYERID NAME       GAMETYPE        REGID
+---------- ---------- ---------- ----------
+       311 ronaldo    football          411
+       312 sachin     cricket           412
+       313 sania      tennis            413
+       314 singh      hockey            414
+       315 raja       athelete          415
+
+4.Retrive the coacherid,playerid,player name,team id using various join conditions.
+SQL> select p.coacherid,p.playerid,p.name,t.teamid from coach c,player p,team t
+  2  where c.teamid=t.teamid and c.id=p.coacherid;
+
+ COACHERID   PLAYERID NAME           TEAMID
+---------- ---------- ---------- ----------
+       111        311 ronaldo           211
+       112        312 sachin            212
+       113        313 sania             213
+       114        314 singh             214
+       115        315 raja              215
+
+
+5.Retrive the gametype,details,date,time,regid using natural join conditions.
+SQL> select gametype,details,day,time,regid from register natural join gamedetails;
+
+GAMETYPE   DETAILS    DAY             TIME      REGID
+---------- ---------- --------- ---------- ----------
+football   mem-11     12-MAY-13       1830        411
+cricket    mem-12     20-MAY-13        930        412
+tennis     mem-2      22-MAY-13       1500        413
+hockey     mem-11     24-MAY-13       1430        414
+athelete   mem-user   27-MAY-13       1030        415
+
+
+
+
+
+
+
+
+
+CURSOR
+Retrive the height of particular plalyer using cursor.
+declare
+cursor c is select playerid,height from player;
+id player.playerid%type;
+h player.height%type;
+he player.height%tpye;
+n number;
+begin
+n:=&n;
+he:=0;
+open c;
+loop
+fetch c into id,h;
+exit when c%notfound;
+if(n=id) then
+he:=h;
+dbms_output.put_line(h);
+end if;
+end loop;
+if(he=0) then 
+dbms_output.put_line('data not available');
+end if;
+close c;
+end;
+
+FUNCTION
+
+
+create or replace function weigh(p player.playerid%type)
+return number is
+w player.weight%type;
+begin
+select weight into w from player where playerid=a;
+end;
+declare
+p number;
+p:=&p;
+dbms_output.put_line(weigh(p));
+end;
+
